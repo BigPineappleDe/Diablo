@@ -9,8 +9,9 @@ namespace diablo;
 use diablo\lib\Config;
 use diablo\lib\Logger;
 use diablo\lib\Middleware;
-use diablo\lib\Request;
 use diablo\lib\Route;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class Diablo
 {
@@ -123,8 +124,8 @@ class Diablo
         if (is_file($file)) {
             //extract($this->assign);
             //include $file;
-            $loader = new \Twig\Loader\FilesystemLoader(self::$fileRoute . 'views');
-            $twig = new \Twig\Environment($loader, array(
+            $loader = new FilesystemLoader(self::$fileRoute . 'views');
+            $twig = new Environment($loader, array(
                 'cache' => CACHE_DIR . '/views',
                 'debug' => IS_DEBUG,
                 'auto_reload' => true,
