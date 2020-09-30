@@ -161,6 +161,9 @@ abstract class OrmModel
         $sql = "select " . $p . " from " . $this->tableName . " where 1 " . $this->where . $this->orderBy . " limit 1 ";
         $result = mysqli_query($this->conn, $sql);
         $row = mysqli_fetch_assoc($result);
+        if (!$row){
+            return null;
+        }
         $data = [];
         foreach ($row as $k => $v) {
             $data[$k] = $v;
