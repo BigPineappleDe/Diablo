@@ -181,6 +181,12 @@ abstract class OrmModel
     {
         $k = $v = [];
         foreach ($arr as $key => $vo) {
+            //实体映射
+            if (!empty($this->entityList)){
+                if (array_key_exists($key, $this->entityList)) {
+                    $key=$this->entityList[$key];
+                }
+            }
             $k[] = $key;
             $v[] = "'" . $vo . "'";
         }
@@ -202,6 +208,12 @@ abstract class OrmModel
     {
         $v = [];
         foreach ($arr as $key => $vo) {
+            //实体映射
+            if (!empty($this->entityList)){
+                if (array_key_exists($key, $this->entityList)) {
+                    $key=$this->entityList[$key];
+                }
+            }
             $v[] = "`" . $key . "`='" . $vo . "'";
         }
         $v = implode(',', $v);
