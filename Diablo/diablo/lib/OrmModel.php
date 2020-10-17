@@ -16,6 +16,7 @@ abstract class OrmModel
     public $orderBy = "";
     public $limit = "";
     public $entityList = [];
+    public $toSql = "";
 
     public function __construct()
     {
@@ -126,6 +127,7 @@ abstract class OrmModel
                 $data[] = $row;
             }
         }
+        $this->toSql=$sql;
         return $data;
     }
 
@@ -139,6 +141,7 @@ abstract class OrmModel
         foreach ($row as $k => $v) {
             $data[$k] = $v;
         }
+        $this->toSql=$sql;
         return $data['num'];
     }
 
@@ -161,13 +164,14 @@ abstract class OrmModel
         $sql = "select " . $p . " from " . $this->tableName . " where 1 " . $this->where . $this->orderBy . " limit 1 ";
         $result = mysqli_query($this->conn, $sql);
         $row = mysqli_fetch_assoc($result);
-        if (!$row){
+        if (!$row) {
             return null;
         }
         $data = [];
         foreach ($row as $k => $v) {
             $data[$k] = $v;
         }
+        $this->toSql=$sql;
         return $data;
     }
 
@@ -176,6 +180,7 @@ abstract class OrmModel
     {
         mysqli_query($this->conn, $sql);
         $res = mysqli_affected_rows($this->conn);
+        $this->toSql=$sql;
         return $res;
     }
 
@@ -185,9 +190,9 @@ abstract class OrmModel
         $k = $v = [];
         foreach ($arr as $key => $vo) {
             //实体映射
-            if (!empty($this->entityList)){
+            if (!empty($this->entityList)) {
                 if (array_key_exists($key, $this->entityList)) {
-                    $key=$this->entityList[$key];
+                    $key = $this->entityList[$key];
                 }
             }
             $k[] = $key;
@@ -212,9 +217,9 @@ abstract class OrmModel
         $v = [];
         foreach ($arr as $key => $vo) {
             //实体映射
-            if (!empty($this->entityList)){
+            if (!empty($this->entityList)) {
                 if (array_key_exists($key, $this->entityList)) {
-                    $key=$this->entityList[$key];
+                    $key = $this->entityList[$key];
                 }
             }
             $v[] = "`" . $key . "`='" . $vo . "'";
@@ -224,13 +229,18 @@ abstract class OrmModel
         return $this->query($sql);
     }
 
+    //返回sql数据
+    public function toSql(){
+        return $this->toSql;
+    }
+
     //实体映射
     private function entityMapping()
     {
         if (!empty($this->entityList)) {
             $strArr = [];
             foreach ($this->entityList as $key => $vo) {
-                $strArr[] = "`" . $vo . "` as `" . $key."`";
+                $strArr[] = "`" . $vo . "` as `" . $key . "`";
             }
             $strArr = implode(',', $strArr);
             return $strArr;
@@ -250,7 +260,7 @@ abstract class OrmModel
             foreach ($pArr as $vo) {
                 //校验key是否存在 存在则取字段的值
                 if (array_key_exists($vo, $arr)) {
-                    $kArr[] = "`" . $arr[$vo] . "` as `" . $vo."`";
+                    $kArr[] = "`" . $arr[$vo] . "` as `" . $vo . "`";
                 }
                 //校验值是否存在 存在则取字段的值
                 if (in_array($vo, $arr)) {
